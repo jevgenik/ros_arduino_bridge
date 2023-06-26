@@ -5,9 +5,14 @@
    http://vanadium-ros-pkg.googlecode.com/svn/trunk/arbotix/
 */
 
-/* PID setpoint info For a Motor */
+/* PID setpoint info For a Motor 
+setpoint is the value that the controller tries to maintain or reach. The controller continuously 
+measures the current state or output of the system and compares it to the setpoint. The difference 
+between the setpoint and the actual value is known as the error, which is used by the controller to 
+generate control signals to drive the system towards the desired setpoint.
+*/
 typedef struct {
-  double TargetTicksPerFrame;    // target speed in ticks per frame
+  double TargetTicksPerFrame;    // target speed in ticks per frame (frame is 1/30s)
   long Encoder;                  // encoder count
   long PrevEnc;                  // last encoder count
 
@@ -83,7 +88,7 @@ void doPID(SetPointInfo * p) {
   //output = (Kp * Perror + Kd * (Perror - p->PrevErr) + Ki * p->Ierror) / Ko;
   // p->PrevErr = Perror;
   output = (Kp * Perror - Kd * (input - p->PrevInput) + p->ITerm) / Ko;
-  p->PrevEnc = p->Encoder;
+  p->PrevEnc = p->Encoder; // save tick count for next loop
 
   output += p->output;
   // Accumulate Integral error *or* Limit output.

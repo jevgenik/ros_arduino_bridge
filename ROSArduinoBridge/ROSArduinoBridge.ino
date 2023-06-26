@@ -106,7 +106,10 @@
   /* Run the PID loop at 30 times per second */
   #define PID_RATE           30     // Hz
 
-  /* Convert the rate into an interval */
+  /* Convert the rate into an interval 
+  Which is the time interval between each execution of the PID loop. It is determined by 
+  dividing 1000 (representing 1 second) by the PID rate. In this case, the PID interval 
+  would be 33.33 milliseconds, which is approximately 1/30th of a second.*/
   const int PID_INTERVAL = 1000 / PID_RATE;
   
   /* Track the next time we make a PID calculation */

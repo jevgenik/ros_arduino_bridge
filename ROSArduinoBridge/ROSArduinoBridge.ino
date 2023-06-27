@@ -199,17 +199,17 @@ int runCommand() {
 #endif
     
 #ifdef USE_BASE
-  case READ_ENCODERS:
+  case READ_ENCODERS: // char 'e'
     Serial.print(readEncoder(LEFT));
     Serial.print(" ");
     Serial.println(readEncoder(RIGHT));
     break;
-   case RESET_ENCODERS:
+   case RESET_ENCODERS: // char 'r'
     resetEncoders();
     resetPID();
     Serial.println("OK");
     break;
-  case MOTOR_SPEEDS:
+  case MOTOR_SPEEDS: // char 'm' 
     /* Reset the auto stop timer */
     lastMotorCommand = millis();
     if (arg1 == 0 && arg2 == 0) {

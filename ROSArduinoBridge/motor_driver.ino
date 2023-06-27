@@ -61,6 +61,9 @@
     digitalWrite(LEFT_MOTOR_ENABLE, HIGH);
   }
   
+  // Sets the speed of the motor
+  // i = 0 for left motor, 1 for right motor
+  // spd = -MAX_PWM to +MAX_PWM
   void setMotorSpeed(int i, int spd) {
     unsigned char reverse = 0;
   

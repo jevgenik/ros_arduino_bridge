@@ -13,15 +13,15 @@ generate control signals to drive the system towards the desired setpoint.
 */
 typedef struct {
   double TargetTicksPerFrame;    // target speed in ticks per frame (frame is 1/30s)
-  long Encoder;                  // encoder count
-  long PrevEnc;                  // last encoder count
+  long Encoder;  // encoder count (ticks)
+  long PrevEnc;  // last encoder count (ticks)
 
   /*
   * Using previous input (PrevInput) instead of PrevError to avoid derivative kick,
   * see http://brettbeauregard.com/blog/2011/04/improving-the-beginner%E2%80%99s-pid-derivative-kick/
   */
-  int PrevInput;                // last input
-  //int PrevErr;                   // last error
+  int PrevInput;  // last input
+  //int PrevErr;  // last error
 
   /*
   * Using integrated term (ITerm) instead of integrated error (Ierror),
@@ -29,9 +29,9 @@ typedef struct {
   * see http://brettbeauregard.com/blog/2011/04/improving-the-beginner%E2%80%99s-pid-tuning-changes/
   */
   //int Ierror;
-  int ITerm;                    //integrated term
+  int ITerm;   // integrated term (error)
 
-  long output;                    // last motor setting
+  long output; // last motor setting  (PWM: 0-255)
 }
 SetPointInfo;
 
@@ -55,21 +55,35 @@ unsigned char moving = 0; // is the base in motion?
 */
 void resetPID(){
    leftPID.TargetTicksPerFrame = 0.0;
-   leftPID.Encoder = readEncoder(LEFT);
-   leftPID.PrevEnc = leftPID.Encoder;
-   leftPID.output = 0;
+   leftPID.Encoder = readEncoder(LEFT); // ticks
+   leftPID.PrevEnc = leftPID.Encoder; // ticks
+   leftPID.output = 0; // PWM
    leftPID.PrevInput = 0;
    leftPID.ITerm = 0;
 
    rightPID.TargetTicksPerFrame = 0.0;
-   rightPID.Encoder = readEncoder(RIGHT);
-   rightPID.PrevEnc = rightPID.Encoder;
-   rightPID.output = 0;
+   rightPID.Encoder = readEncoder(RIGHT); // ticks
+   rightPID.PrevEnc = rightPID.Encoder; // ticks  
+   rightPID.output = 0; // PWM
    rightPID.PrevInput = 0;
    rightPID.ITerm = 0;
 }
 
-/* PID routine to compute the next motor commands */
+/* PID routine to compute the next motor commands 
+The code implements a Proportional-Integral-Derivative (PID) controller to control the output 
+of a system based on the difference between a setpoint and a measured value.
+The function takes in a pointer to a SetPointInfo struct, which contains information about 
+the desired target, the current encoder value, and other tuning parameters.
+It calculates the error between the target value and the current encoder reading, and uses 
+this to calculate the output using the proportional (Kp), integral (Ki), and derivative (Kd) terms. 
+The calculated output is then accumulated with any previous output and limited to a maximum PWM value.
+
+To avoid derivative kick and allow tuning changes, it uses a modified version of the derivative 
+term that subtracts the change in input from the previous input instead of the change in error 
+from the previous error.
+
+Finally, it updates the setpoint information struct with the current output, previous input 
+and encoder values, and accumulated integral term.*/
 void doPID(SetPointInfo * p) {
   long Perror;
   long output;

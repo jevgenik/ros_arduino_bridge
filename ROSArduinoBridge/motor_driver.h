@@ -11,6 +11,15 @@
   #define LEFT_MOTOR_ENABLE 13
 #endif
 
+// Initializes the motor controller and should be called once at the beginning of the program.
 void initMotorController();
-void setMotorSpeed(int i, int spd);
+
+// Sets the speed of the motor
+// i = 0 for left motor, 1 for right motor
+// spd = -MAX_PWM to +MAX_PWM
+void setMotorSpeed(int i, int spd); 
+
+// Sets the speed of the left and right motors
+// leftSpeed = -MAX_PWM to +MAX_PWM
+// rightSpeed = -MAX_PWM to +MAX_PWM
 void setMotorSpeeds(int leftSpeed, int rightSpeed);

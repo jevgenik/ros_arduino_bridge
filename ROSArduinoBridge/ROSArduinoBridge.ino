@@ -337,7 +337,7 @@ void loop() {
   }
   
 // If we are using base control, run a PID calculation at the appropriate intervals
-#ifdef USE_BASE
+#ifdef USE_BASE // USE_BASE means that the base controller is enabled
   if (millis() > nextPID) {
     updatePID();
     nextPID += PID_INTERVAL;

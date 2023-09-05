@@ -12,7 +12,7 @@ between the setpoint and the actual value is known as the error, which is used b
 generate control signals to drive the system towards the desired setpoint.
 */
 typedef struct {
-  double TargetTicksPerFrame;    // target speed in ticks per frame (frame is 1/30s)
+  double TargetTicksPerFrame;  // target speed in ticks per frame (frame is 1/30s)
   long Encoder;  // encoder count (ticks)
   long PrevEnc;  // last encoder count (ticks)
 
@@ -20,7 +20,7 @@ typedef struct {
   * Using previous input (PrevInput) instead of PrevError to avoid derivative kick,
   * see http://brettbeauregard.com/blog/2011/04/improving-the-beginner%E2%80%99s-pid-derivative-kick/
   */
-  int PrevInput;  // last input
+  int PrevInput;  // last input (ticks)
   //int PrevErr;  // last error
 
   /*
@@ -86,11 +86,11 @@ Finally, it updates the setpoint information struct with the current output, pre
 and encoder values, and accumulated integral term.*/
 void doPID(SetPointInfo * p) {
   long Perror;
-  long output;
-  int input;
+  long output; // PWM to motors
+  int input; // ticks
 
   //Perror = p->TargetTicksPerFrame - (p->Encoder - p->PrevEnc);
-  input = p->Encoder - p->PrevEnc;
+  input = p->Encoder - p->PrevEnc; // p->Encoder is the current encoder reading, p->PrevEnc is the previous encoder reading (ticks)
   Perror = p->TargetTicksPerFrame - input;
 
 
@@ -140,7 +140,7 @@ void updatePID() {
   }
 
   /* Compute PID update for each motor */
-  doPID(&rightPID);
+  doPID(&rightPID); // &rightPID is the pointer to the rightPID struct
   doPID(&leftPID);
 
   /* Set the motor speeds accordingly */
